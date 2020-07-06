@@ -11,7 +11,7 @@ app.use(cors());
 const repositories = [];
 
 app.get("/repositories", (request, response) => {
-  return response.json(repositories); // Rota que lista todos os repositórios;
+  return response.json(repositories); // lista todos os repositórios;
 });
 
 app.post("/repositories", (request, response) => {
@@ -31,17 +31,24 @@ app.post("/repositories", (request, response) => {
 });
 
 app.put("/repositories/:id", (request, response) => {
-  const { id } = request.params;
   const { title, url, techs } = request.body;
+  const { id } = request.params;
 
   const repositoryIndex = repositories.findIndex(repository => repository.id == id);
 
   if(repositoryIndex < 0) {
-    return response.status(400).json({ error: 'Repository not found' });
+    return response.status(400).json({ error: "Repository not found." });
   }
 
-  const repository = { title, url, techs, }
-  repositories[repositoryIndex] = repository; // O valor de likes deve ser incrementado em 1 a cada requisição
+  const repository = {
+    id,
+    title,
+    url,
+    techs,
+    likes: repositories[repositoryIndex].likes,
+  };
+
+  repositories[repositoryIndex] = repository;
 
   return response.json(repository);
 
@@ -54,7 +61,7 @@ app.delete("/repositories/:id", (request, response) => {
   const repositoryIndex = repositories.findIndex(repository => repository.id == id);
 
   if(repositoryIndex < 0) {
-    return response.status(400).json({ error: 'Repository not found' });
+    return response.status(400).json({ error: "Repository not found." });
   }
 
   repositories.splice(repositoryIndex, 1)
@@ -65,13 +72,21 @@ app.delete("/repositories/:id", (request, response) => {
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
   
-  const repository = repositories.find(repository => repository.id == id);
+  const repositoryIndex = repositories.findIndex(repository => repository.id == id );
 
-  if(!repository) {
-    return response.status(400).send();
+  if (repositoryIndex < 0){
+    return response.status(400).json({error: "Repository not found."});
   }
 
-  repository.likes += 1; // O valor de likes deve ser incrementado em 1 a cada requisição
+  const repository = {
+    id,
+    title: repositories[repositoryIndex].title,
+    url: repositories[repositoryIndex].url,
+    techs: repositories[repositoryIndex].techs,
+    likes: repositories[repositoryIndex].likes+1,
+  };
+
+  repositories[repositoryIndex] = repository;
 
   return response.json(repository);
 });
