@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const { uuid } = require("uuidv4");
+const { uuid } = require("uuidv4"); // Importando função (ID Unico Universl)
 
 const app = express();
 
@@ -10,10 +10,22 @@ app.use(cors());
 
 const repositories = [];
 
+/* TIPOS DE PARÂMETROS
+ * Query Params: usado p/ filtros e paginação
+ * Route params: usado p/
+ * Request Body: usado no conteúdo na hora de criar ou editar um recurso (através do JSON)
+*/
+
+/* MIDDLEWARE: 
+ * Interceptador de requisições que intorrompe totalmente a requisição ou alterar dados da requisição
+*/
+
+// GET: Buscando informações do back-end
 app.get("/repositories", (request, response) => {
   return response.json(repositories); // lista todos os repositórios;
 });
 
+// POST: Criar uma  informação do back-end
 app.post("/repositories", (request, response) => {
   const { title, url, techs } = request.body;
 
@@ -30,6 +42,7 @@ app.post("/repositories", (request, response) => {
   return response.json(repository);
 });
 
+// PUT/PATCH: Alterar uma informação back-end
 app.put("/repositories/:id", (request, response) => {
   const { title, url, techs } = request.body;
   const { id } = request.params;
@@ -51,10 +64,9 @@ app.put("/repositories/:id", (request, response) => {
   repositories[repositoryIndex] = repository;
 
   return response.json(repository);
-
-
 });
 
+// DELETE: Excluir uma informação no back-end
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
 
@@ -69,6 +81,7 @@ app.delete("/repositories/:id", (request, response) => {
   return response.status(204).send();
 });
 
+// POST: Criando Like atrvés do ID do repositories no back-end
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
   
